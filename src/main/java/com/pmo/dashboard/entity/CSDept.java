@@ -2,6 +2,10 @@ package com.pmo.dashboard.entity;
 
 public class CSDept{
 
+	
+	
+	
+	
     private String csSubDeptId;
     private String csBuName;
     private String csSubDeptName;
