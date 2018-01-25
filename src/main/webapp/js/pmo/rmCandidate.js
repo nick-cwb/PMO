@@ -58,6 +58,60 @@ $(function() {
 	dateType();
 })
 
+$("#interviewDate").change(function(){
+	var interviewDate = $("#interviewDate").val();
+	var interviewer = $("#interviewer").val();
+	var projectName = $("#projectName").val();
+	var interviewType = $("#interviewType").val();
+	if(interviewDate==''){
+		$('#addInterviewer').attr("disabled", "disabled");
+	}
+	if(interviewDate!=''&&interviewer!=''&&projectName!=''&&interviewType!=''){
+		$("#addInterviewer").removeAttr("disabled");
+	}
+});
+
+$("#interviewer").change(function(){
+	var interviewDate = $("#interviewDate").val();
+	var interviewer = $("#interviewer").val();
+	var projectName = $("#projectName").val();
+	var interviewType = $("#interviewType").val();
+	if(interviewer==''){
+		$('#addInterviewer').attr("disabled", "disabled");
+	}
+	if(interviewDate!=''&&interviewer!=''&&projectName!=''&&interviewType!=''){
+		$("#addInterviewer").removeAttr("disabled");
+	}
+});
+
+$('#projectName').blur(function(){
+	var interviewDate = $("#interviewDate").val();
+	var interviewer = $("#interviewer").val();
+	var projectName = $("#projectName").val();
+	var interviewType = $("#interviewType").val();
+	if(projectName==''){
+		$('#addInterviewer').attr("disabled", "disabled");	
+	}
+	if(interviewDate!=''&&interviewer!=''&&projectName!=''&&interviewType!=''){
+		$("#addInterviewer").removeAttr("disabled");
+	}
+});
+
+$('#interviewType').change(function(){
+	var interviewDate = $("#interviewDate").val();
+	var interviewer = $("#interviewer").val();
+	var projectName = $("#projectName").val();
+	var interviewType = $("#interviewType").val();
+	
+	if(interviewType==''){
+		$('#addInterviewer').attr("disabled", "disabled");	
+	}
+	if(interviewDate!=''&&interviewer!=''&&projectName!=''&&interviewType!=''){
+		$("#addInterviewer").removeAttr("disabled");
+	}
+		
+});
+
 function loadMyCandidate(currPage) {
 	$("#rmCandidateList  tr:not(:first)").html("");
 	var pageRecordsNum = $("#pageRecordsNum").find("option:selected").text();
@@ -383,6 +437,10 @@ function dateType() {
 
 function rescheduleInterview(pushId,candidateId) {
 	
+	if($("#interviewDate").val()==''||$("#interviewer").val()==''||$('#projectName').val()==''||$('#interviewType').val()==''){
+		$('#addInterviewer').attr("disabled", "disabled");
+	}
+	
 	/*上次面试信息回显*/
 	$.ajax({
 		url:path + '/service/rmCandidate/getIntervieInfo',
@@ -495,6 +553,15 @@ function rescheduleInterview(pushId,candidateId) {
 /* 新一轮面试 */
 function scheduleInterview(pushId) {
 	$('#myModal').modal('show');
+	$("#interviewDate").val("");
+	$("#interviewer").val("");
+	$('#projectName').val("");
+	$('#interviewType').val("");
+	
+	if($("#interviewDate").val()==''||$("#interviewer").val()==''||$('#projectName').val()==''||$('#interviewType').val()==''){
+		$('#addInterviewer').attr("disabled", "disabled");
+	}
+	
 	loadInterviewer();
 	$("#addInterviewer").click(function() {
 		var interviewDate = $("#interviewDate").val();
@@ -548,6 +615,11 @@ function nextInterview(pushId, projectName) {
 	$('#projectName').val(projectName);
 	$('#projectName').attr("disabled", "disabled");
 	$('#myModal').modal('show');
+	
+	if($("#interviewDate").val()==''||$("#interviewer").val()==''||$('#projectName').val()==''||$('#interviewType').val()==''){
+		$('#addInterviewer').attr("disabled", "disabled");
+	}
+	
 	loadInterviewer();
 	$("#addInterviewer").click(function() {
 		var interviewDate = $("#interviewDate").val();
@@ -665,8 +737,7 @@ function offerInterview(pushId) {
 		$(this).find("input[type=radio]").prop("checked", true);
 	});
 
-	$
-			.ajax({
+	$.ajax({
 				url : path + '/service/rmCandidate/offerDemandList',
 				dataType : 'json',
 				async : false,
@@ -730,27 +801,31 @@ function offerInterview(pushId) {
 			label : 'Confirm',
 			action : function(dialog) {
 				var demandId = $("input[name=checkAll]:checked").val();
-				$.ajax({
-					url : path + '/service/rmCandidate/offerInterview',
-					dataType : "json",
-					async : false,
-					cache : false,
-					type : "post",
-					data : {
-						"pushId" : pushId,
-						"demandId" : demandId
-					},
-					success : function(data) {
-						if (data == "1") {
-							BootstrapDialog.show({
-								title : '面试安排',
-								message : 'offer成功！',
-								size : BootstrapDialog.SIZE_SMALL
-							})
+				if(demandId == null){
+					alert("offer失败,请选择offer部门！")
+				}else{
+					$.ajax({
+						url : path + '/service/rmCandidate/offerInterview',
+						dataType : "json",
+						async : false,
+						cache : false,
+						type : "post",
+						data : {
+							"pushId" : pushId,
+							"demandId" : demandId
+						},
+						success : function(data) {
+							if (data == "1") {
+								BootstrapDialog.show({
+									title : '面试安排',
+									message : 'offer成功！',
+									size : BootstrapDialog.SIZE_SMALL
+								})
+							}
+							loadMyCandidate();
 						}
-						loadMyCandidate();
-					}
-				});
+					});
+				}
 				dialog.close();
 			}
 		}, {
